@@ -21,6 +21,7 @@ AIを活用したソフトウェア開発ワークフロー研修のためのデ
 - **React 19.2.0** (関数コンポーネント)
 - **TypeScript 5.x** (strict mode)
 - **Tailwind CSS 4.x**
+- **Radix UI** (アクセシブルなUIプリミティブ)
 - **GitHub Pages**（静的サイトホスティング）
 
 ### 重要な環境制約（静的エクスポート）
@@ -214,6 +215,27 @@ function useLocalStorage<T>(key: string, initialValue: T) {
 - カード型レイアウト（`rounded-2xl`, `shadow-xl`）
 - レスポンシブデザイン
 
+### Radix UI の活用
+
+**積極的にRadix UIを利用してください**。複雑なUIコンポーネントを実装する際は、まずRadix UIのプリミティブを検討すること。
+
+#### 使用すべき場面
+- **ダイアログ/モーダル**: `@radix-ui/react-dialog`
+- **ドロップダウンメニュー**: `@radix-ui/react-dropdown-menu`
+- **ポップオーバー**: `@radix-ui/react-popover`
+- **セレクトボックス**: `@radix-ui/react-select`
+- **タブ**: `@radix-ui/react-tabs`
+- **ツールチップ**: `@radix-ui/react-tooltip`
+- **アコーディオン**: `@radix-ui/react-accordion`
+- **チェックボックス/ラジオ**: `@radix-ui/react-checkbox`, `@radix-ui/react-radio-group`
+
+#### Radix UIの利点
+- **アクセシビリティ**: ARIA属性、キーボードナビゲーションが標準実装
+- **カスタマイズ性**: 完全なスタイル制御（Tailwind CSSと相性抜群）
+- **型安全性**: TypeScript完全対応
+- **静的エクスポート対応**: クライアントコンポーネントとして動作
+```
+
 ### カラーパレット
 
 ```css
@@ -344,5 +366,6 @@ const handleUpdate = useCallback((task) => {...}, []);
 - ✅ **useEffectの最小化** - 4段階チェックで本当に必要か確認
 - ✅ **SOLID原則** - 保守性の高いアーキテクチャ
 - ✅ **型安全性** - TypeScript strictモードで堅牢なコード
+- ✅ **Radix UI活用** - 複雑なUIコンポーネントは車輪の再発明を避ける
 
 コードを書く前に、このガイドラインを参照してください。
