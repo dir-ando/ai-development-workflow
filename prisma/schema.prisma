@@ -1,0 +1,57 @@
+// Prisma Schema for 家計簿アプリ
+// PostgreSQL データベース用
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 取引種別（収入 or 支出）
+enum TransactionType {
+  INCOME  // 収入
+  EXPENSE // 支出
+}
+
+// カテゴリモデル
+// 収入・支出をカテゴリ別に分類するためのマスターデータ
+model Category {
+  id           String          @id @default(cuid())
+  name         String          // カテゴリ名（例: 医療費、食費、給与など）
+  type         TransactionType // このカテゴリが収入用か支出用か
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  // リレーション
+  transactions Transaction[]
+
+  // 同じ名前のカテゴリが収入と支出で別々に存在できるようにする
+  @@unique([name, type])
+  @@map("categories")
+}
+
+// 取引モデル
+// 個々の収入・支出の記録
+model Transaction {
+  id          String          @id @default(cuid())
+  type        TransactionType // 収入 or 支出
+  amount      Int             // 金額（円）
+  date        DateTime        // 取引日
+  description String?         // 説明・詳細（任意）
+
+  // カテゴリとのリレーション
+  categoryId  String
+  category    Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  // インデックス
+  @@index([date])       // 日付での検索・ソートを高速化
+  @@index([categoryId]) // カテゴリでの検索を高速化
+  @@index([type])       // 収入/支出での検索を高速化
+  @@map("transactions")
+}
