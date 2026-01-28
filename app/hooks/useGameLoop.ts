@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface GameLoopOptions {
   isActive: boolean;
@@ -13,17 +13,20 @@ interface GameLoopOptions {
 }
 
 export function useGameLoop({ isActive, interval, callback }: GameLoopOptions) {
+  const callbackRef = useRef(callback);
+  callbackRef.current = callback;
+
   useEffect(() => {
     if (!isActive) {
       return;
     }
 
     const timer = setInterval(() => {
-      callback();
+      callbackRef.current();
     }, interval);
 
     return () => {
       clearInterval(timer);
     };
-  }, [isActive, interval, callback]);
+  }, [isActive, interval]);
 }

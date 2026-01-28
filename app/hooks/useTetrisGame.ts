@@ -142,53 +142,51 @@ export function useTetrisGame() {
    * ソフトドロップ（1マス下に移動）
    */
   const softDrop = useCallback(() => {
-    setGameState(state => {
-      if (!state.currentPiece || state.gameOver || state.isPaused) {
-        return state;
-      }
+    const state = gameStateRef.current;
 
-      const newPosition = { x: state.currentPiece.position.x, y: state.currentPiece.position.y + 1 };
+    if (!state.currentPiece || state.gameOver || state.isPaused) {
+      return;
+    }
 
-      if (canPlaceTetromino(state.board, state.currentPiece, newPosition)) {
-        return {
-          ...state,
-          currentPiece: { ...state.currentPiece, position: newPosition },
-          score: state.score + SCORE_SOFT_DROP,
-        };
-      }
+    const newPosition = { x: state.currentPiece.position.x, y: state.currentPiece.position.y + 1 };
 
+    if (canPlaceTetromino(state.board, state.currentPiece, newPosition)) {
+      setGameState({
+        ...state,
+        currentPiece: { ...state.currentPiece, position: newPosition },
+        score: state.score + SCORE_SOFT_DROP,
+      });
+    } else {
       // 移動できない場合は固定
       lockPiece();
-      return state;
-    });
+    }
   }, [lockPiece]);
 
   /**
    * ハードドロップ（一番下まで即座に落とす）
    */
   const hardDrop = useCallback(() => {
-    setGameState(state => {
-      if (!state.currentPiece || state.gameOver || state.isPaused) {
-        return state;
-      }
+    const state = gameStateRef.current;
 
-      const dropDistance = calculateDropDistance(state.board, state.currentPiece);
-      const newPosition = {
-        x: state.currentPiece.position.x,
-        y: state.currentPiece.position.y + dropDistance,
-      };
+    if (!state.currentPiece || state.gameOver || state.isPaused) {
+      return;
+    }
 
-      const updatedPiece = { ...state.currentPiece, position: newPosition };
-      const newScore = state.score + dropDistance * SCORE_HARD_DROP;
+    const dropDistance = calculateDropDistance(state.board, state.currentPiece);
+    const newPosition = {
+      x: state.currentPiece.position.x,
+      y: state.currentPiece.position.y + dropDistance,
+    };
 
-      // 即座に固定
-      lockPiece();
-
-      return {
-        ...state,
-        score: newScore,
-      };
+    // スコアを更新してからピースを固定
+    setGameState({
+      ...state,
+      currentPiece: { ...state.currentPiece, position: newPosition },
+      score: state.score + dropDistance * SCORE_HARD_DROP,
     });
+
+    // 次のフレームでピースを固定
+    setTimeout(() => lockPiece(), 0);
   }, [lockPiece]);
 
   /**
